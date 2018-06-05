@@ -5,8 +5,6 @@ import java.util.List;
 
 public class ValidationHaduken {
 
-	Pessoa p = new Pessoa();
-	
 	public List<String> validaPessoa(Pessoa pessoa) {
 		
 		List<String> constraints = new ArrayList<String>();
@@ -15,49 +13,48 @@ public class ValidationHaduken {
 			return constraints;
 		}
 
-		if (pessoa.cpf != null) {
-			if (pessoa.name != null) {
-				if (pessoa.telefonesFixos != null) {
-					for (String telefone : pessoa.telefonesFixos) {
-						if (telefone != null) {
-							if (telefone.isEmpty()) {
-								constraints.add("Erro - Telefone inválido");
-								return constraints;
-							} else {
-								if(telefone.length() < 7){
-									constraints.add("Erro - Telefone inválido");
-									return constraints;
-								}
-							}
-							
-						} else {
-							constraints.add("Erro - Telefone inválido");
-							return constraints;
-						}
-					}
-				}
-				else constraints.add("Erro - deveria ter pelo menos um telefone");
-			}
-			else constraints.add("Erro - deveria ter nome definido");
-		} 
-		else constraints.add("Erro - deveria ter cpf definido");
+		if (pessoa.cpf == null) {
+			constraints.add("Erro - deveria ter cpf definido");
+			return constraints;
+		}
+
+		if (pessoa.name == null) {
+			constraints.add("Erro - deveria ter nome definido");
+			return constraints;
+		}
+
+		if (validaTelefone(pessoa, constraints)) return constraints;
 
 		return constraints;
 	}
-	
-	class Pessoa {
-		public List<String> telefonesFixos;
-		public String name;
-		public String cpf;
+
+	private boolean validaTelefone(Pessoa pessoa, List<String> constraints) {
+		if (pessoa.telefonesFixos == null) {
+			constraints.add("Erro - deveria ter pelo menos um telefone");
+			return true;
+		}
+
+		for (String telefone : pessoa.telefonesFixos) {
+			if (
+				telefone == null ||
+				telefone.isEmpty() ||
+				telefone.length() < 7
+			) {
+				constraints.add("Erro - Telefone inválido");
+				return true;
+			}
+		}
+		return false;
 	}
-	
+
 	public static void main(String[] args) {
 		ValidationHaduken vh = new ValidationHaduken();
-		vh.p.cpf = "111";
-		vh.p.name = "name";
-		vh.p.telefonesFixos = null;
+		Pessoa p = new Pessoa();
+		p.cpf = "111";
+		p.name = "name";
+		p.telefonesFixos = null;
 		
-		List<String> retorno = vh.validaPessoa(vh.p);
+		List<String> retorno = vh.validaPessoa(p);
 		System.out.println(retorno.toString());
 		
 	}

@@ -1,10 +1,80 @@
+plugins {
+    id "org.sonarqube" version "2.6.2"
+    id "com.github.spotbugs" version "1.6.2"
+}
+
 apply plugin:"java"
 apply plugin:"idea"
+apply plugin:"jacoco"
+apply plugin: "checkstyle"
+apply plugin: 'pmd'
+apply plugin: 'findbugs'
+apply plugin: 'groovy' // required by codenarc
+apply plugin: 'codenarc'
 
 repositories {
-    mavenCentral()
+    jcenter()
 }
 
 dependencies {
+    compile group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.5.1' // required by groovy plugin
     testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+jacoco {
+    toolVersion = "0.8.1"
+}
+
+checkstyle {
+    toolVersion '8.6'
+    ignoreFailures = true
+}
+
+
+pmd {
+    toolVersion "6.5.0"
+    ignoreFailures = true
+    ruleSets = [
+        'java-basic',
+        'java-braces',
+        'java-clone',
+        'java-codesize',
+        'java-comments',
+        'java-controversial',
+        'java-coupling',
+        'java-design',
+        'java-empty',
+        'java-finalizers',
+        'java-imports',
+        'java-optimizations',
+        'java-strictexception',
+        'java-strings',
+        'java-typeresolution',
+        'java-unnecessary',
+        'java-unusedcode'
+    ]
+}
+
+findbugs {
+    ignoreFailures = true
+}
+
+spotbugs {
+    toolVersion = '3.1.3'
+    ignoreFailures = true
+}
+
+codenarc {
+    toolVersion = "1.2"
+    ignoreFailures = true
+    reportFormat = 'html'
+}
+
+[FindBugs,Pmd,Checkstyle,com.github.spotbugs.SpotBugsTask,JacocoReport].each { classType ->
+    tasks.withType(classType) {
+        reports {
+            xml.enabled = false
+            html.enabled = true
+        }
+    }
 }
